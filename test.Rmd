@@ -52,7 +52,7 @@ ggplot(mean.ABIA2_fly, aes(reorder(UniqueCarrier, -DepDelay, sum), DepDelay))+ge
 
 ```
 
-whatever
+whatever..
 
 ```{r 1.1.2 }
 
