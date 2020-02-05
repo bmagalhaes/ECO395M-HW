@@ -3,22 +3,34 @@ library(mosaic)
 library(ggplot2)
 
 abia = read.csv('abia.csv')
-
-# Surpplus?
-#ABIA2 = abia
-#USairports <- subset(airports,(airports$iso_country =="US"))
-#ABIA2$TWindow = floor(ABIA2$DepTime/100)
-
-
-
-# Q1: What is the best time of day to fly to minimize delays?
-# Calculate delaying departure time:
 abia = mutate(abia, category = ifelse(Origin == "AUS", "Departure", "Arrival"))
 abia$CRSTWindow_D = floor(abia$CRSDepTime/100)
 abia$CRSTWindow_A = floor(abia$CRSArrTime/100)
+
+airports = read.csv('airports.csv')
+airports = subset(airports,!(airports$iata_code == ""))
+airports = airports[-c(1:4,7:13,15:18)]
+
 abia_conf <- subset(abia,(abia$Cancelled == "0"))
 abia_conf <- subset(abia_conf,!(abia_conf$Diverted == 1)) #should we keep?
 abia_cancel <- subset(abia,(abia$Cancelled == "1"))
+
+departures_fly <- subset(abia_conf, abia_conf$category == "Departure")
+delay_summ = departures_fly %>%
+  group_by(Dest)  %>%  # group the data points by model nae
+  summarize(dly.mean = mean(DepDelay[(DepDelay>=0)], na.rm=TRUE))
+delay_summ = left_join(delay_summ, airports, by = c("Dest" = "iata_code"))
+delay_summ = mutate(delay_summ,AUSLat = 30.194500)
+delay_summ = mutate(delay_summ,AUSLong = -97.66990)
+
+ggplot(delay_summ, aes(x=reorder(Dest, dly.mean), y=dly.mean)) + 
+  geom_bar(stat='identity') + 
+  coord_flip()
+
+# Should I do the same graph for departures?
+# ggplot(arrdel_summ, aes(x=reorder(Origin, dly.mean), y=dly.mean)) + 
+#  geom_bar(stat='identity') + 
+#  coord_flip()
 
 # plot the summ for all the airline companies 
 abia_CRSsumm_D_total <- abia_conf %>%
@@ -102,39 +114,18 @@ plot(TaxiIn~ArrDelay, data=abia, xlim=c(-100,0))
 EarlyArrival= subset(abia, abia$ArrDelay<0)
 EarlyArrival
 lm(TaxiIn~EarlyArrival, data=abia)
-# How can I show it? Anyway my assumption was wrong!
 
-arrivals <- subset(abia_conf, abia_conf$category == "Arrival")
-departures <- subset(abia_conf, abia_conf$category == "Departure")
-
-arrdel_summ = arrivals %>%
-  group_by(Origin)  %>%  # group the data points by model nae
-  summarize(dly.mean = mean(ArrDelay[ArrDelay>=0], na.rm=TRUE))  # calculate a mean for each model
-
-# reorder the x labels
-ggplot(arrdel_summ, aes(x=reorder(Origin, dly.mean), y=dly.mean)) + 
-  geom_bar(stat='identity') + 
-  coord_flip()
-
-dep_summ = departures %>%
-  group_by(Dest)  %>%  # group the data points by model nae
-  summarize(dly.mean = mean(DepDelay, na.rm=TRUE))  # calculate a mean for each model
-
-# reorder the x labels
-ggplot(dep_summ, aes(x=reorder(Dest, dly.mean), y=dly.mean)) + 
-  geom_bar(stat='identity') + 
-  coord_flip()
-
-delay_summ$dly.mean[is.nan(delay_summ$dly.mean)]<-0.01
-
+# delay_summ$dly.mean[is.nan(delay_summ$dly.mean)]<-0.01
+# delay_summ = subset(delay_summ,(delay_summ$dly.mean >= 1))
+# delay_summ = arrange(delay_summ, dly.mean)
 
 us_states <- map_data("state")
-delay_summ = subset(delay_summ,(delay_summ$dly.mean >= 1))
-delay_summ = arrange(delay_summ, dly.mean)
-delay_summ <- mutate(delay_summ, n = rownames(delay_summ))
-
 ggplot() +
   geom_polygon(data = us_states,  aes(long, lat, group = group), fill = "grey", col = "black") +
-  geom_curve(data=delay_summ, aes(x = AUSLong, y = AUSLat, xend = longitude_deg, yend = latitude_deg), col = n, size = 1, curvature = 0.1) + 
+  geom_curve(data=delay_summ, aes(x = AUSLong, y = AUSLat, xend = longitude_deg, yend = latitude_deg, colour = dly.mean), size = 1, curvature = 0.1) + 
   geom_point(data=delay_summ, aes(x=longitude_deg, y=latitude_deg),color="red",size=3)
-
+#  transition_states(
+#    dly.mean,
+#    transition_length = 0,
+#    state_length = 1
+#  )
