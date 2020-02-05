@@ -37,7 +37,7 @@ First, we'll look on the Sclass 350 data. We can see there's a negative relation
 p_350 = ggplot(data = sclass_350) + 
   geom_point(mapping = aes(x = mileage, y = price), color='darkgrey')+
   theme_bw()+
-  labs(title = "Mileage vs Price (Trim Level: 350)")+
+  labs(title = "Mileage vs Price (Sclass 350)")+
   theme(plot.title = element_text(hjust = 0.5))
 p_350
 ```
