@@ -6,24 +6,40 @@ output:
   md_document:
     variant: markdown_github
 ---
+By Bernardo Magalhaes, Adhish Luitel, Ji Heon Shim
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(FNN)
+urlfile<-'https://raw.githubusercontent.com/bmagalhaes/ECO395M-HW/master/sclass.csv'
+sclass<-read.csv(url(urlfile))
 ```
 
-# Exercise 1.1
-We used K-nearest neighbors to build a predictive model for price, given mileage, separately for each of two trim levels: 350 and 65 AMG.
+# Exercise 1.2
+We used K-nearest neighbors to build a predictive model for price, given mileage, separately for each of two trim levels: 350 and 65 AMG.  In order to do this, we divided our data into 2 subgroups, 350 and 65 AMG, and got rid of all the other data.
 
-```{r cars}
-summary(cars)
+```{r 1.2.1, echo=FALSE}
+# Divide groups into 2 and define 'Root Mean Squre Error' function
+sclass_350 <- subset(sclass,(sclass$trim == "350"))
+sclass_65AMG <- subset(sclass,(sclass$trim == "65 AMG"))
+rmse = function(y, ypred) {
+  sqrt(mean(data.matrix((y-ypred)^2)))
+}
 ```
 
-## Including Plots
+### Sclass 350
+First, we'll look on the Sclass 350 data. We can see there's a negative relationship between mileage and price plotted as below
 
-You can also embed plots, for example:
 
-```{r pressure, echo=FALSE}
-plot(pressure)
+```{r 1.2.2, echo=FALSE}
+# plot the data
+p_350 = ggplot(data = sclass_350) + 
+  geom_point(mapping = aes(x = mileage, y = price), color='darkgrey')+
+  theme_bw()+
+  labs(title = "Mileage vs Price (Trim Level: 350)")+
+  theme(plot.title = element_text(hjust = 0.5))
+p_350
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
