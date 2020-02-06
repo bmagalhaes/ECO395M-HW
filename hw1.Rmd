@@ -8,10 +8,57 @@ output:
 ---
 By Bernardo Magalhaes, Adhish Luitel, Ji Heon Shim
 
-```{r setup, include=FALSE}
+```{r setup1, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
+library(mosaic)
+library(ggplot2)
 library(FNN)
+
+#setup
+urlfile<-'https://raw.githubusercontent.com/bmagalhaes/ECO395M-HW/master/abia.csv'
+abia<-read.csv(url(urlfile))
+```
+
+In this question, we have all the data of flight information that arrive at or depart from Austin-Berstrom airport.  
+
+```{r 1.1.1, echo=FALSE}
+abia = mutate(abia, category = ifelse(Origin == "AUS", "Departure", "Arrival"))
+abia$CRSTWindow_D = floor(abia$CRSDepTime/100)
+abia$CRSTWindow_A = floor(abia$CRSArrTime/100)
+urlfile<-'https://raw.githubusercontent.com/bmagalhaes/ECO395M-HW/master/airports.csv'
+airports = read.csv('airports.csv')
+airports = subset(airports,!(airports$iata_code == ""))
+airports = airports[-c(1:4,7:13,15:18)]
+
+#cleaning the data: get rid of cancelled or diverted flights
+abia_conf <- subset(abia,(abia$Cancelled == "0"))
+abia_conf <- subset(abia_conf,!(abia_conf$Diverted == 1)) 
+abia_cancel <- subset(abia,(abia$Cancelled == "1"))
+
+```
+
+### Which destination is likely to cause the longest departure delay?
+First, we examined all the aircrafts departing from Austin, and arranged departure delays by their destinations. Our analysis shows that DTW(Detroit) is the destination which causes the most departure delay from Austin.
+
+```{r 1.1.2, echo=FALSE}
+departures_fly <- subset(abia_conf, abia_conf$category == "Departure")
+delay_summ = departures_fly %>%
+  group_by(Dest)  %>%  # group the data points by model nae
+  summarize(dly.mean = mean(DepDelay[(DepDelay>=0)], na.rm=TRUE))
+delay_summ = left_join(delay_summ, airports, by = c("Dest" = "iata_code"))
+delay_summ = mutate(delay_summ,AUSLat = 30.194500)
+delay_summ = mutate(delay_summ,AUSLong = -97.66990)
+
+p1= ggplot(delay_summ, aes(x=reorder(Dest, dly.mean), y=dly.mean)) +  labs(title = "Average departure delay per destination")+
+  theme(plot.title = element_text(hjust = 0.5))+ geom_bar(stat='identity') + 
+  coord_flip()+labs(x="Average departure delay(minutes)", y="Airline company")
+p1
+```
+
+
+```{r setup2, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
 urlfile<-'https://raw.githubusercontent.com/bmagalhaes/ECO395M-HW/master/sclass.csv'
 sclass<-read.csv(url(urlfile))
 ```

@@ -1,5 +1,22 @@
 By Bernardo Magalhaes, Adhish Luitel, Ji Heon Shim
 
+In this question, we have all the data of flight information that arrive
+at or depart from Austin-Berstrom airport.
+
+### Which destination is likely to cause the longest departure delay?
+
+First, we examined all the aircrafts departing from Austin, and arranged
+departure delays by their destinations. Our analysis shows that
+DTW(Detroit) is the destination which causes the most departure delay
+from Austin.
+
+    ## Warning: Column `Dest`/`iata_code` joining factors with different levels,
+    ## coercing to character vector
+
+    ## Warning: Removed 1 rows containing missing values (position_stack).
+
+![](hw1_files/figure-markdown_github/1.1.2-1.png)
+
 Exercise 1.2
 ============
 
@@ -14,7 +31,6 @@ First, we’ll look on the Sclass 350 data. We can see there’s a negative
 relationship between mileage and price plotted as below
 
 ![](hw1_files/figure-markdown_github/1.2.2-1.png)
-<<<<<<< HEAD
 
 And we splitted Sclass 350 data into two groups. One is “training set”,
 and the other is “test set”. The training set accounts for 80% of whole
@@ -26,14 +42,14 @@ was 3. The fitted model for k=3 is as below, and RSME is 10880.2
 
 ![](hw1_files/figure-markdown_github/1.2.4-1.png)
 
-    ## [1] 11120.39
+    ## [1] 11466.68
 
 When k=20, The fitted model is as below. RSME is 9238.5, which is
 smaller than RSME when k=3.
 
 ![](hw1_files/figure-markdown_github/1.2.5-1.png)
 
-    ## [1] 10310.09
+    ## [1] 10170.71
 
 Now, the fitted model for k=100 below shows us the fact that the graph
 gets smoother as k goes bigger. But RSME when k=100 is 10483.9, which is
@@ -42,7 +58,7 @@ minimizes RSME will be somewhere between k=3 and k=100.
 
 ![](hw1_files/figure-markdown_github/1.2.6-1.png)
 
-    ## [1] 12026.88
+    ## [1] 11403.42
 
 In order to find the optimal k, we plotted k versus RSME for every k.
 The graph below shows that RSME is minimized to 9134.4 when k equals to
@@ -52,9 +68,9 @@ samples are randomly chosen.
 
 ![](hw1_files/figure-markdown_github/1.2.7-1.png)
 
-    ## [1] 14
+    ## [1] 12
 
-    ## [1] 9962.66
+    ## [1] 9976.861
 
 The graph below shows the plot of the fitted value when k is the optimal
 value.
@@ -75,14 +91,14 @@ k=3 is as below, and RSME is 21822.8
 
 ![](hw1_files/figure-markdown_github/1.2.11-1.png)
 
-    ## [1] 26691.87
+    ## [1] 24957.24
 
 When k=20, The fitted model is as below. RSME is 22546.5, which is
 slightly bigger than RSME when k=3.
 
 ![](hw1_files/figure-markdown_github/1.2.12-1.png)
 
-    ## [1] 23582.43
+    ## [1] 24200.68
 
 Now, the fitted model for k=100 below shows us the fact that the graph
 gets smoother as k goes bigger. But RSME when k=100 is 40928.0, which is
@@ -91,7 +107,7 @@ must be much smaller than 100.
 
 ![](hw1_files/figure-markdown_github/1.2.13-1.png)
 
-    ## [1] 33074.09
+    ## [1] 33110.56
 
 In order to find the optimal k, we plotted k versus RSME for every k
 value. The graph below shows that RSME is minimized to 21037.7 when k
@@ -99,9 +115,9 @@ equals to 4.
 
 ![](hw1_files/figure-markdown_github/1.2.14-1.png)
 
-    ## [1] 54
+    ## [1] 5
 
-    ## [1] 22673.12
+    ## [1] 23219.28
 
 The graph below shows the plot of fitted model when k is optimally
 chosen.
@@ -132,5 +148,3 @@ count(sclass_65AMG)
     ##       n
     ##   <int>
     ## 1   292
-=======
->>>>>>> fd943f953e6e7761a1204c213ead1070f9b61f71
