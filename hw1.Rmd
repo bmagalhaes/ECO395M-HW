@@ -69,3 +69,14 @@ y_test = select(D_test, price)
 ```
 
 Then we ran K-nearest-neighbors for k, starting from k=3 to higher value. We faced an error when k=2, so the possible minimum value of k was 3.
+```{r 1.2.4, echo=FALSE}
+
+# k=3
+knn3 = knn.reg(train = X_train, test = X_test, y = y_train, k=3)
+
+p_train = ggplot(data = D_train) + 
+  geom_point(mapping = aes(x = mileage, y = price), color='lightgrey') + 
+  theme_bw(base_size=18)
+p_train+geom_path(mapping=aes(x=mileage, y=ypred_knn3), color='red', size=1.5)
+```
+
