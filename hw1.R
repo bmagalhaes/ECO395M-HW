@@ -6,7 +6,7 @@ abia = read.csv('abia.csv')
 abia = mutate(abia, category = ifelse(Origin == "AUS", "Departure", "Arrival"))
 abia$CRSTWindow_D = floor(abia$CRSDepTime/100)
 abia$CRSTWindow_A = floor(abia$CRSArrTime/100)
-
+us_states <- map_data("state")
 airports = read.csv('airports.csv')
 airports = subset(airports,!(airports$iata_code == ""))
 airports = airports[-c(1:4,7:13,15:18)]
@@ -119,13 +119,22 @@ lm(TaxiIn~EarlyArrival, data=abia)
 # delay_summ = subset(delay_summ,(delay_summ$dly.mean >= 1))
 # delay_summ = arrange(delay_summ, dly.mean)
 
-us_states <- map_data("state")
+
 ggplot() +
+  theme(plot.title = element_text(hjust = 0.5), panel.grid.major = element_blank(),  panel.grid.minor = element_blank())+
   geom_polygon(data = us_states,  aes(long, lat, group = group), fill = "grey", col = "black") +
   geom_curve(data=delay_summ, aes(x = AUSLong, y = AUSLat, xend = longitude_deg, yend = latitude_deg, colour = dly.mean), size = 1, curvature = 0.1) + 
-  geom_point(data=delay_summ, aes(x=longitude_deg, y=latitude_deg),color="red",size=3)
-#  transition_states(
-#    dly.mean,
-#    transition_length = 0,
-#    state_length = 1
-#  )
+  geom_point(data=delay_summ, aes(x=longitude_deg, y=latitude_deg),color="red",size=1) +
+  scale_colour_gradient2(low="blue", high="red")+
+  labs(title = 'Average Departure Delay per Destination', x = "", y = "")
+
+summary(delay_summ$dly.mean)
+delay_quant = subset(delay_summ,delay_summ$dly.mean >= 30.2)
+ggplot() +
+  theme(plot.title = element_text(hjust = 0.5), panel.grid.major = element_blank(),  panel.grid.minor = element_blank())+
+  geom_polygon(data = us_states,  aes(long, lat, group = group), fill = "grey", col = "black") +
+  geom_curve(data=delay_quant, aes(x = AUSLong, y = AUSLat, xend = longitude_deg, yend = latitude_deg, colour = dly.mean), size = 1, curvature = 0.1) + 
+  geom_point(data=delay_quant, aes(x=longitude_deg, y=latitude_deg),color="red",size=1) +
+  scale_colour_gradient2(low="blue", high="red")+
+  labs(title = 'Average Departure Delay per Destination - 3rd Quantile', x = "", y = "")
+#  transition_states(dly.mean, transition_length = 0, state_length = 1)
