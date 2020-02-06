@@ -38,9 +38,9 @@ ggplot(cancel_rate, aes(x=reorder(UniqueCarrier, cancelrate), y=cancelrate)) +
 ggplot(delay_summ, aes(x=reorder(Dest, dly.mean), y=dly.mean)) + 
   geom_bar(stat='identity') + 
   coord_flip() +
-  labs(title = 'Average Departure Delay per Destination', x = "Airport", y = "Minutes")+
+  labs(title = 'Average Departure Delay per Destination', x = "Airport", y = "Minutes") +
   scale_size_area()+
-  theme(plot.title = element_text(hjust = 0.5))+
+  theme(plot.title = element_text(hjust = 0.5))
 
 # Should I do the same graph for departures?
 # ggplot(arrdel_summ, aes(x=reorder(Origin, dly.mean), y=dly.mean)) + 
