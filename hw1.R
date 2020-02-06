@@ -6,13 +6,13 @@ abia = read.csv('abia.csv')
 abia = mutate(abia, category = ifelse(Origin == "AUS", "Departure", "Arrival"))
 abia$CRSTWindow_D = floor(abia$CRSDepTime/100)
 abia$CRSTWindow_A = floor(abia$CRSArrTime/100)
-
+us_states <- map_data("state")
 airports = read.csv('airports.csv')
 airports = subset(airports,!(airports$iata_code == ""))
 airports = airports[-c(1:4,7:13,15:18)]
 
 abia_conf <- subset(abia,(abia$Cancelled == "0"))
-abia_conf <- subset(abia_conf,!(abia_conf$Diverted == 1)) #should we keep?
+# abia_conf <- subset(abia_conf,!(abia_conf$Diverted == 1)) # should we keep?
 abia_cancel <- subset(abia,(abia$Cancelled == "1"))
 
 departures_fly <- subset(abia_conf, abia_conf$category == "Departure")
@@ -23,9 +23,24 @@ delay_summ = left_join(delay_summ, airports, by = c("Dest" = "iata_code"))
 delay_summ = mutate(delay_summ,AUSLat = 30.194500)
 delay_summ = mutate(delay_summ,AUSLong = -97.66990)
 
+cancel_rate = abia %>%
+  group_by(UniqueCarrier)  %>%  # group the data points by model nae
+  summarize(cancelrate = length(which(Cancelled == 1)) / (length(which(Cancelled == 1)) + length(which(Cancelled == 0))))
+cancel_rate = mutate(cancel_rate,cancelrate = cancelrate*100)
+
+ggplot(cancel_rate, aes(x=reorder(UniqueCarrier, cancelrate), y=cancelrate)) + 
+  geom_bar(stat='identity') + 
+  coord_flip() +
+  labs(title = 'Cancellation Rate per Carrier', x = "Carrier", y = "Cancelation Rate (%)")+
+  scale_size_area()+
+  theme(plot.title = element_text(hjust = 0.5))
+
 ggplot(delay_summ, aes(x=reorder(Dest, dly.mean), y=dly.mean)) + 
   geom_bar(stat='identity') + 
-  coord_flip()
+  coord_flip() +
+  labs(title = 'Average Departure Delay per Destination', x = "Airport", y = "Minutes")+
+  scale_size_area()+
+  theme(plot.title = element_text(hjust = 0.5))+
 
 # Should I do the same graph for departures?
 # ggplot(arrdel_summ, aes(x=reorder(Origin, dly.mean), y=dly.mean)) + 
@@ -45,13 +60,13 @@ p1 = ggplot(data = subset(abia_CRSsumm_D_total,(abia_CRSsumm_D_total$category ==
   geom_bar(aes(x = CRSTWindow_D, y = DepDelay_mean),stat='identity',position='dodge')+
   labs(title = "Scheduled Time vs Average Departure Delay", x = "Scheduled Time", y = "Departure Delay")+
   theme_bw()+
-  theme(plot.title = element_text(hjust = 0.5))
+  theme(plot.title = element_text(hjust = 0.5), panel.grid.major = element_blank())
 p1
 p2 = ggplot(data = subset(abia_CRSsumm_A_total,(abia_CRSsumm_A_total$category == "Arrival")))+
   geom_bar(aes(x = CRSTWindow_A, y = ArrDelay_mean),stat='identity',position='dodge')+
   labs(title = "Scheduled Time vs Average Arrival Delay", x = "Scheduled Time", y = "Arrival Delay")+
   theme_bw()+
-  theme(plot.title = element_text(hjust = 0.5))
+  theme(plot.title = element_text(hjust = 0.5), panel.grid.major = element_blank())
 p2
 
 # Q2: When is the best month to fly to minimize delays?
@@ -119,13 +134,28 @@ lm(TaxiIn~EarlyArrival, data=abia)
 # delay_summ = subset(delay_summ,(delay_summ$dly.mean >= 1))
 # delay_summ = arrange(delay_summ, dly.mean)
 
-us_states <- map_data("state")
+
 ggplot() +
+  theme(plot.title = element_text(hjust = 0.5), panel.grid.major = element_blank(),  panel.grid.minor = element_blank())+
   geom_polygon(data = us_states,  aes(long, lat, group = group), fill = "grey", col = "black") +
   geom_curve(data=delay_summ, aes(x = AUSLong, y = AUSLat, xend = longitude_deg, yend = latitude_deg, colour = dly.mean), size = 1, curvature = 0.1) + 
-  geom_point(data=delay_summ, aes(x=longitude_deg, y=latitude_deg),color="red",size=3)
-#  transition_states(
-#    dly.mean,
-#    transition_length = 0,
-#    state_length = 1
-#  )
+  geom_point(data=delay_summ, aes(x=longitude_deg, y=latitude_deg),color="red",size=1) +
+  scale_colour_gradient2(low="blue", high="red")+
+  labs(title = 'Average Departure Delay per Destination', x = "", y = "")+
+  theme(plot.title = element_text(hjust = 0.5))+
+  scale_x_discrete()+
+  scale_y_discrete()
+
+summary(delay_summ$dly.mean)
+delay_quant = subset(delay_summ,delay_summ$dly.mean >= 30.2)
+ggplot() +
+  theme(plot.title = element_text(hjust = 0.5), panel.grid.major = element_blank(),  panel.grid.minor = element_blank())+
+  geom_polygon(data = us_states,  aes(long, lat, group = group), fill = "grey", col = "black") +
+  geom_curve(data=delay_quant, aes(x = AUSLong, y = AUSLat, xend = longitude_deg, yend = latitude_deg, colour = dly.mean), size = 1, curvature = 0.1) + 
+  geom_point(data=delay_quant, aes(x=longitude_deg, y=latitude_deg),color="red",size=1) +
+  scale_colour_gradient2(low="blue", high="red")+
+  labs(title = 'Average Departure Delay per Destination - 3rd Quantile', x = "", y = "")+
+  theme(plot.title = element_text(hjust = 0.5))+
+  scale_x_discrete()+
+  scale_y_discrete()
+#  transition_states(dly.mean, transition_length = 0, state_length = 1)
