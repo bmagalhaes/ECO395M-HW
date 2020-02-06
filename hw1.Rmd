@@ -73,10 +73,16 @@ Then we ran K-nearest-neighbors for k, starting from k=3 to higher value. We fac
 
 # k=3
 knn3 = knn.reg(train = X_train, test = X_test, y = y_train, k=3)
+ypred_knn = knn3$pred
 
-p_train = ggplot(data = D_train) + 
+D_test$ypred_knn = ypred_knn
+
+p_test_knn3 = ggplot(data = D_test) + 
   geom_point(mapping = aes(x = mileage, y = price), color='lightgrey') + 
-  theme_bw(base_size=18)
-p_train+geom_path(mapping=aes(x=mileage, y=ypred_knn3), color='red', size=1.5)
-```
+  geom_path(mapping = aes(x = mileage, y = ypred_knn), color='red') +
+  theme_bw()+
+  labs(title = "Fitted Model for k=3(Sclass 350)")+
+  theme(plot.title = element_text(hjust = 0.5))
+p_test_knn3
+
 

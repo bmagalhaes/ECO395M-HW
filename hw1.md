@@ -21,4 +21,4 @@ data.
 
 Then we ran K-nearest-neighbors for k, starting from k=3 to higher
 value. We faced an error when k=2, so the possible minimum value of k
-was 3.
+was 3. ![](hw1_files/figure-markdown_github/1.2.4-1.png)
