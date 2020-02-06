@@ -17,9 +17,9 @@ highest cancellation rate among all the airlines flying through Austin.
 ### Which destination is likely to cause the longest departure delay?
 
 Next, we examined all the aircrafts departing from Austin, and arranged
-departure delays by their destinations. Our analysis shows that
-DTW(Detroit) is the destination which causes the most departure delay
-from Austin.
+departure delays by their destinations. Our analysis shows that DSM(Des
+Moines) is the destination which causes the most departure delay from
+Austin.
 
 ![](hw1_files/figure-markdown_github/1.1.3-1.png)
 
@@ -39,7 +39,7 @@ to 23 o’clock at night. Again, we can guess that bad sight due to
 darkness can be one of various reasons.
 ![](hw1_files/figure-markdown_github/1.1.5-1.png)
 
-### Which month of year does flight delay mostly to occur?
+### Which month of year does flight delay mostly occur?
 
 This time, we’ll extend our view from day to year to find out the month
 which flight delay mostly occurs. In case of departure delays from
@@ -78,9 +78,6 @@ showing the largest average arrival delay time for OH.
 
 (text)
 
-    ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
-    ##   11.35   17.00   21.77   26.07   30.29  129.00       1
-
 ![](hw1_files/figure-markdown_github/1.1.11-1.png)
 
 Exercise 1.2
@@ -108,14 +105,14 @@ was 3. The fitted model for k=3 is as below, and RSME is 10880.2
 
 ![](hw1_files/figure-markdown_github/1.2.4-1.png)
 
-    ## [1] 10091.98
+    ## [1] 10512.5
 
 When k=20, The fitted model is as below. RSME is 9238.5, which is
 smaller than RSME when k=3.
 
 ![](hw1_files/figure-markdown_github/1.2.5-1.png)
 
-    ## [1] 9212.024
+    ## [1] 10158.12
 
 Now, the fitted model for k=100 below shows us the fact that the graph
 gets smoother as k goes bigger. But RSME when k=100 is 10483.9, which is
@@ -124,7 +121,7 @@ minimizes RSME will be somewhere between k=3 and k=100.
 
 ![](hw1_files/figure-markdown_github/1.2.6-1.png)
 
-    ## [1] 11230.99
+    ## [1] 11497.94
 
 In order to find the optimal k, we plotted k versus RSME for every k.
 The graph below shows that RSME is minimized to 9134.4 when k equals to
@@ -134,9 +131,9 @@ samples are randomly chosen.
 
 ![](hw1_files/figure-markdown_github/1.2.7-1.png)
 
-    ## [1] 12
+    ## [1] 6
 
-    ## [1] 8855.53
+    ## [1] 9933.825
 
 The graph below shows the plot of the fitted value when k is the optimal
 value.
@@ -157,14 +154,14 @@ k=3 is as below, and RSME is 21822.8
 
 ![](hw1_files/figure-markdown_github/1.2.11-1.png)
 
-    ## [1] 20123.76
+    ## [1] 22525.31
 
 When k=20, The fitted model is as below. RSME is 22546.5, which is
 slightly bigger than RSME when k=3.
 
 ![](hw1_files/figure-markdown_github/1.2.12-1.png)
 
-    ## [1] 15966.78
+    ## [1] 19271.98
 
 Now, the fitted model for k=100 below shows us the fact that the graph
 gets smoother as k goes bigger. But RSME when k=100 is 40928.0, which is
@@ -173,7 +170,7 @@ must be much smaller than 100.
 
 ![](hw1_files/figure-markdown_github/1.2.13-1.png)
 
-    ## [1] 29207.55
+    ## [1] 38148.78
 
 In order to find the optimal k, we plotted k versus RSME for every k
 value. The graph below shows that RSME is minimized to 21037.7 when k
@@ -181,9 +178,9 @@ equals to 4.
 
 ![](hw1_files/figure-markdown_github/1.2.14-1.png)
 
-    ## [1] 19
+    ## [1] 22
 
-    ## [1] 15883.46
+    ## [1] 18954.5
 
 The graph below shows the plot of fitted model when k is optimally
 chosen.
