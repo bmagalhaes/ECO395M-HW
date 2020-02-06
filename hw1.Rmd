@@ -29,7 +29,7 @@ rmse = function(y, ypred) {
 ```
 
 ### Sclass 350
-First, we'll look on the Sclass 350 data. We can see there's a negative relationship between mileage and price plotted as below
+First, we'll look on the Sclass 350 data. We can see there's a negative relationship between mileage and price plotted as below  
 
 
 ```{r 1.2.2, echo=FALSE}
@@ -68,21 +68,94 @@ y_test = select(D_test, price)
 
 ```
 
-Then we ran K-nearest-neighbors for k, starting from k=3 to higher value. We faced an error when k=2, so the possible minimum value of k was 3.
+Then we ran K-nearest-neighbors for k, starting from k=3 to higher value. We faced an error when k=2, so the possible minimum value of k was 3. The fitted model for k=3 is as below, and RSME is 10984.7.
+  
 ```{r 1.2.4, echo=FALSE}
-
 # k=3
 knn3 = knn.reg(train = X_train, test = X_test, y = y_train, k=3)
-ypred_knn = knn3$pred
+ypred_knn3 = knn3$pred
 
-D_test$ypred_knn = ypred_knn
+D_test$ypred_knn3 = ypred_knn3
 
 p_test_knn3 = ggplot(data = D_test) + 
   geom_point(mapping = aes(x = mileage, y = price), color='lightgrey') + 
-  geom_path(mapping = aes(x = mileage, y = ypred_knn), color='red') +
+  geom_path(mapping = aes(x = mileage, y = ypred_knn3), color='red') +
   theme_bw()+
-  labs(title = "Fitted Model for k=3(Sclass 350)")+
+  labs(title = "Fitted Model for k=3 (Sclass 350)")+
   theme(plot.title = element_text(hjust = 0.5))
 p_test_knn3
+rmse(y_test, ypred_knn3)
+```
+
+When k=20, The fitted model is as below. RSME is 9636.9, which is smaller than RSME when k=3. 
 
 
+```{r 1.2.5, echo=FALSE}
+# k=20
+knn20 = knn.reg(train = X_train, test = X_test, y = y_train, k=20)
+ypred_knn20 = knn20$pred
+
+D_test$ypred_knn20 = ypred_knn20
+
+p_test_knn20 = ggplot(data = D_test) + 
+  geom_point(mapping = aes(x = mileage, y = price), color='lightgrey') + 
+  geom_path(mapping = aes(x = mileage, y = ypred_knn20), color='red') +
+  theme_bw()+
+  labs(title = "Fitted Model for k=20 (Sclass 350)")+
+  theme(plot.title = element_text(hjust = 0.5))
+p_test_knn20
+rmse(y_test, ypred_knn20)
+```
+
+Now, the fitted model for k=100 below shows us the fact that the graph gets smoother as k goes bigger. But RSME when k=100 is 11988.9, which is bigger than that of when k=20. So it is probable that the optimal k that minimizes RSME will be somewhere between k=3 and k=100.
+
+
+```{r 1.2.6, echo=FALSE}
+# k=100
+knn100 = knn.reg(train = X_train, test = X_test, y = y_train, k=100)
+ypred_knn100 = knn100$pred
+
+D_test$ypred_knn100 = ypred_knn100
+
+p_test_knn100 = ggplot(data = D_test) + 
+  geom_point(mapping = aes(x = mileage, y = price), color='lightgrey') + 
+  geom_path(mapping = aes(x = mileage, y = ypred_knn100), color='red') +
+  theme_bw()+
+  labs(title = "Fitted Model for k=100 (Sclass 350)")+
+  theme(plot.title = element_text(hjust = 0.5))
+p_test_knn100
+rmse(y_test, ypred_knn100)
+```
+
+In order to find the optimal k, we plotted k versus RSME for every k. The graph below shows that RSME is minimized to 9487.9 when k equals 10.
+
+
+```{r 1.2.7, echo=FALSE}
+KNN_result <- data.frame(K=c(), rsme=c())
+# KNN
+for(v in c(3:nrow(X_train))){
+  knn_K = knn.reg(train = X_train, test = X_test, y = y_train, k=v)
+  ypred_knn = knn_K$pred
+  KNN_rsme = rmse(y_test, ypred_knn)
+  KNN_result <- rbind(KNN_result,c(v,KNN_rsme))
+}
+
+colnames(KNN_result) = c("K","RSME")
+Kmin = KNN_result$K[which.min(KNN_result$RSME)]
+
+P_KNNresult_350 = ggplot(data = KNN_result)+
+  geom_line(aes(x = K, y = RSME))+
+  geom_line(aes(x = Kmin, y = RSME), col = "red")+
+  theme_bw()+
+  labs(title = "K vs RSME(Sclass 350)")+
+  theme(plot.title = element_text(hjust = 0.5))
+P_KNNresult_350
+Kmin
+knn10 = knn.reg(train = X_train, test = X_test, y = y_train, k=10)
+ypred_knn10 = knn10$pred
+D_test$ypred_knn10 = ypred_knn10
+rmse(y_test, ypred_knn10)
+```
+
+
+```{r 1.2.7, echo=FALSE}
