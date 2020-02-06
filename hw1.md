@@ -14,6 +14,7 @@ First, we’ll look on the Sclass 350 data. We can see there’s a negative
 relationship between mileage and price plotted as below
 
 ![](hw1_files/figure-markdown_github/1.2.2-1.png)
+<<<<<<< HEAD
 
 And we splitted Sclass 350 data into two groups. One is “training set”,
 and the other is “test set”. The training set accounts for 80% of whole
@@ -131,3 +132,5 @@ count(sclass_65AMG)
     ##       n
     ##   <int>
     ## 1   292
+=======
+>>>>>>> fd943f953e6e7761a1204c213ead1070f9b61f71
