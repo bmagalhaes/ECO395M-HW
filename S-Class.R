@@ -1,28 +1,20 @@
-####
 library(mosaic)
 
-# The variables involved
+sclass = read.csv('sclass.csv', head=1)
 summary(sclass)
 
-# plot the data
 ggplot(data = sclass) + 
   geom_point(mapping = aes(x = price, y = mileage), color='darkgrey') + 
   ylim(7000, 20000)
 
-# Focus on 2 trim levels and split the sub sections: 350 and 65 AMG
 sclass550 = subset(sclass, trim == '350')
 dim(sclass550)
-
 sclass65AMG = subset(sclass, trim == '65 AMG')
 summary(sclass65AMG)
 
 # Look at price vs mileage for each trim level
 plot(price ~ mileage, data = sclass550)
 plot(price ~ mileage, data = sclass65AMG)
-
-#350 AMG
-#Mileage vs Price for 350AMG
-plot(price ~ mileage, data = sclass550AMG)
 
 # Make a train test split
 N = nrow(sclass550)
@@ -45,18 +37,75 @@ X_train = select(D_train, mileage)
 y_train = select(D_train, price)
 X_test = select(D_test, mileage)
 y_test = select(D_test, price)
-KNN_result <- data.frame(K=j(), rsme=j())
 
-#This gives a KKN result and use a for loop to calculate RMSE for each K
-for(i in j(3:nrow(X_train))){
-# K = 2 generates an error
-#So lets try with K = 3
-  knn3 = knn.reg(train = X_train, test = X_test, y = y_train, k=3)
-  ypred_knn = knn3$pred
-  KNN_rsme = rmse(y_test, ypred_knn)
-  KNN_result <- rbind(KNN_result,j(3,KNN_rsme))
+lm = lm(price ~ poly(mileage, 2), data=D_train)
+ypred_lm2 = predict(lm, D_test)
+p_test = ggplot(data = D_test) + 
+  geom_point(mapping = aes(x = mileage, y = price), color='lightgrey') + 
+  theme_bw(base_size=18)
+p_test
+p_test + geom_path(aes(x = mileage, y = ypred_lm2), color='blue')
+
+rsme = function(y, ypred) {
+  sqrt(mean(data.matrix((y-ypred)^2)))
 }
-colnames(KNN_result) = i("K","RSME")
+
+knn250 = knn.reg(train = X_train, test = X_test, y = y_train, k=250)
+3
+
+knn_resultpred <- c(1:84)
+knn_resultpred = as.data.frame(knn_resultpred)
+
+i=3
+for(i in 3:nrow(X_train)) {
+  knn_mod = knn.reg(train = X_train, test = X_test, y = y_train, k=i)
+  ypred_knn = knn_mod$pred
+  knn_resultpred = cbind(knn_resultpred,ypred_knn)
+}
+
+names(knn_resultpred) = c("N",3:332)
+knn_resultpred = subset(knn_resultpred[2:332])
+
+knn_resultrsme = data.frame(K=c(),rsme=c())
+i=3
+for(i in 3:nrow(X_train)) {
+  knn_mod = knn.reg(train = X_train, test = X_test, y = y_train, k=i)
+  ypred_knn = knn_mod$pred
+  rsme_knn = rsme(y_test, ypred_knn) 
+  knn_resultrsme =  rbind(knn_resultrsme, c(i,rsme_knn))
+}
+
+names(knn_resultrsme) = c("K", "rsme")
+
+k_min = with(knn_resultrsme, K[rsme == min(rsme)])
+
+ggplot(data = knn_resultrsme) + 
+geom_point(mapping = aes(x = K, y = rsme), color='lightgrey') + 
+theme_bw(base_size=18) +
+geom_vline(xintercept = k_min, 
+               color = "purple", size=1)
+
+pred_knn = knn_resultpred$"19"
+pred_knn = as.data.frame(pred_knn)
+D_test = arrange(D_test, mileage)
+pred_knn = mutate(pred_knn, mileage = D_test$mileage)
+pred_knn = mutate(pred_knn, price = D_test$price)
+
+ggplot(data = pred_knn) + 
+  geom_point(mapping = aes(x = mileage, y = price), color='lightgrey') + 
+  theme_bw(base_size=18) +
+  geom_path(aes(x = mileage, y = pred_knn), color='blue')
+
+
+
+
+
+##### FROM HERE DOWN I DIDN'T CHECK ####
+
+
+
+
+
 Kmin = KNN_result$K[which.min(KNN_result$RSME)]
 P_KNNresult_350 = ggplot(data = KNN_result)+
   geom_line(aes(x = K, y = RSME))+
