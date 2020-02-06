@@ -25,14 +25,14 @@ was 3. The fitted model for k=3 is as below, and RSME is 10880.2
 
 ![](hw1_files/figure-markdown_github/1.2.4-1.png)
 
-    ## [1] 9339.727
+    ## [1] 11120.39
 
 When k=20, The fitted model is as below. RSME is 9238.5, which is
 smaller than RSME when k=3.
 
 ![](hw1_files/figure-markdown_github/1.2.5-1.png)
 
-    ## [1] 8559.556
+    ## [1] 10310.09
 
 Now, the fitted model for k=100 below shows us the fact that the graph
 gets smoother as k goes bigger. But RSME when k=100 is 10483.9, which is
@@ -41,7 +41,7 @@ minimizes RSME will be somewhere between k=3 and k=100.
 
 ![](hw1_files/figure-markdown_github/1.2.6-1.png)
 
-    ## [1] 9929.078
+    ## [1] 12026.88
 
 In order to find the optimal k, we plotted k versus RSME for every k.
 The graph below shows that RSME is minimized to 9134.4 when k equals to
@@ -51,9 +51,9 @@ samples are randomly chosen.
 
 ![](hw1_files/figure-markdown_github/1.2.7-1.png)
 
-    ## [1] 5
+    ## [1] 14
 
-    ## [1] 8287.092
+    ## [1] 9962.66
 
 The graph below shows the plot of the fitted value when k is the optimal
 value.
@@ -74,14 +74,14 @@ k=3 is as below, and RSME is 21822.8
 
 ![](hw1_files/figure-markdown_github/1.2.11-1.png)
 
-    ## [1] 23561.11
+    ## [1] 26691.87
 
 When k=20, The fitted model is as below. RSME is 22546.5, which is
 slightly bigger than RSME when k=3.
 
 ![](hw1_files/figure-markdown_github/1.2.12-1.png)
 
-    ## [1] 19516.63
+    ## [1] 23582.43
 
 Now, the fitted model for k=100 below shows us the fact that the graph
 gets smoother as k goes bigger. But RSME when k=100 is 40928.0, which is
@@ -90,7 +90,7 @@ must be much smaller than 100.
 
 ![](hw1_files/figure-markdown_github/1.2.13-1.png)
 
-    ## [1] 34164.83
+    ## [1] 33074.09
 
 In order to find the optimal k, we plotted k versus RSME for every k
 value. The graph below shows that RSME is minimized to 21037.7 when k
@@ -98,9 +98,9 @@ equals to 4.
 
 ![](hw1_files/figure-markdown_github/1.2.14-1.png)
 
-    ## [1] 9
+    ## [1] 54
 
-    ## [1] 18134.53
+    ## [1] 22673.12
 
 The graph below shows the plot of fitted model when k is optimally
 chosen.
