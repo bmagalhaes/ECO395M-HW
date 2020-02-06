@@ -14,3 +14,11 @@ First, we’ll look on the Sclass 350 data. We can see there’s a negative
 relationship between mileage and price plotted as below
 
 ![](hw1_files/figure-markdown_github/1.2.2-1.png)
+
+And we splitted Sclass 350 data into two groups. One is “training set”,
+and the other is “test set”. The training set accounts for 80% of whole
+data.
+
+Then we ran K-nearest-neighbors for k, starting from k=3 to higher
+value. We faced an error when k=2, so the possible minimum value of k
+was 3.
