@@ -35,11 +35,37 @@ First, we'll look on the Sclass 350 data. We can see there's a negative relation
 ```{r 1.2.2, echo=FALSE}
 # plot the data
 p_350 = ggplot(data = sclass_350) + 
-  geom_point(mapping = aes(x = mileage, y = price), color='darkgrey')+
+  geom_point(mapping = aes(x = mileage, y = price), color='medium purple')+
   theme_bw()+
   labs(title = "Mileage vs Price (Sclass 350)")+
   theme(plot.title = element_text(hjust = 0.5))
 p_350
 ```
 
+And we splitted Sclass 350 data into two groups. One is "training set", and the other is "test set". The training set accounts for 80% of whole data. 
 
+```{r 1.2.3, echo=FALSE}
+# Make a train-test split
+N = nrow(sclass_350)
+N_train = floor(0.8*N)
+N_test = N - N_train
+
+# randomly sample a set of data points to include in the training set
+train_ind = sample.int(N, N_train, replace=FALSE)
+
+# Define the training and testing set
+D_train = sclass_350[train_ind,]
+D_test = sclass_350[-train_ind,]
+
+# optional book-keeping step:
+D_test = arrange(D_test, mileage)
+
+# Now separate the training and testing sets into features (X) and outcome (y)
+X_train = select(D_train, mileage)
+y_train = select(D_train, price)
+X_test = select(D_test, mileage)
+y_test = select(D_test, price)
+
+```
+
+Then we ran K-nearest-neighbors for k, starting from k=3 to higher value. We faced an error when k=2, so the possible minimum value of k was 3.
