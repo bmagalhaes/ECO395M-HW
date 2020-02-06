@@ -7,6 +7,7 @@ output:
     variant: markdown_github
 ---
 By Bernardo Magalhaes, Adhish Luitel, Ji Heon Shim
+# Exercise 1
 
 ```{r setup1, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
@@ -20,40 +21,182 @@ urlfile<-'https://raw.githubusercontent.com/bmagalhaes/ECO395M-HW/master/abia.cs
 abia<-read.csv(url(urlfile))
 ```
 
+## Exercise 1.1
 In this question, we have all the data of flight information that arrive at or depart from Austin-Berstrom airport.  
 
 ```{r 1.1.1, echo=FALSE}
 abia = mutate(abia, category = ifelse(Origin == "AUS", "Departure", "Arrival"))
 abia$CRSTWindow_D = floor(abia$CRSDepTime/100)
 abia$CRSTWindow_A = floor(abia$CRSArrTime/100)
+us_states <- map_data("state")
 urlfile<-'https://raw.githubusercontent.com/bmagalhaes/ECO395M-HW/master/airports.csv'
-airports = read.csv('airports.csv')
+airports = read.csv(url(urlfile))
 airports = subset(airports,!(airports$iata_code == ""))
 airports = airports[-c(1:4,7:13,15:18)]
 
-#cleaning the data: get rid of cancelled or diverted flights
 abia_conf <- subset(abia,(abia$Cancelled == "0"))
 abia_conf <- subset(abia_conf,!(abia_conf$Diverted == 1)) 
 abia_cancel <- subset(abia,(abia$Cancelled == "1"))
 
 ```
 
-### Which destination is likely to cause the longest departure delay?
-First, we examined all the aircrafts departing from Austin, and arranged departure delays by their destinations. Our analysis shows that DTW(Detroit) is the destination which causes the most departure delay from Austin.
+### Which airline company has the highest cancellation rate?
+First, we'll have a close look on cancellation rates by airline companies. Our data shows that American Eagle airline(MQ) has the highest cancellation rate among all the airlines flying through Austin.
 
-```{r 1.1.2, echo=FALSE}
+```{r 1.1.2, echo=FALSE, warning=FALSE}
 departures_fly <- subset(abia_conf, abia_conf$category == "Departure")
-delay_summ = departures_fly %>%
-  group_by(Dest)  %>%  # group the data points by model nae
-  summarize(dly.mean = mean(DepDelay[(DepDelay>=0)], na.rm=TRUE))
-delay_summ = left_join(delay_summ, airports, by = c("Dest" = "iata_code"))
-delay_summ = mutate(delay_summ,AUSLat = 30.194500)
-delay_summ = mutate(delay_summ,AUSLong = -97.66990)
+  delay_summ = departures_fly %>%
+    group_by(Dest)  %>%  # group the data points by model nae
+    summarize(dly.mean = mean(DepDelay[(DepDelay>=0)], na.rm=TRUE))
+  delay_summ = left_join(delay_summ, airports, by = c("Dest" = "iata_code"))
+  delay_summ = mutate(delay_summ,AUSLat = 30.194500)
+  delay_summ = mutate(delay_summ,AUSLong = -97.66990)
 
-p1= ggplot(delay_summ, aes(x=reorder(Dest, dly.mean), y=dly.mean)) +  labs(title = "Average departure delay per destination")+
-  theme(plot.title = element_text(hjust = 0.5))+ geom_bar(stat='identity') + 
-  coord_flip()+labs(x="Average departure delay(minutes)", y="Airline company")
-p1
+cancel_rate = abia %>%
+  group_by(UniqueCarrier)  %>%  # group the data points by model nae
+  summarize(cancelrate = length(which(Cancelled == 1)) / (length(which(Cancelled == 1)) + length(which(Cancelled == 0))))
+cancel_rate = mutate(cancel_rate,cancelrate = cancelrate*100)
+
+ggplot(cancel_rate, aes(x=reorder(UniqueCarrier, cancelrate), y=cancelrate)) + 
+  geom_bar(stat='identity') + 
+  coord_flip() +
+  labs(title = 'Cancellation Rate per Carrier', x = "Carrier", y = "Cancellation Rate (%)")+
+  scale_size_area()+
+  theme(plot.title = element_text(hjust = 0.5))
+```
+
+### Which destination is likely to cause the longest departure delay?
+Next, we examined all the aircrafts departing from Austin, and arranged departure delays by their destinations. Our analysis shows that DTW(Detroit) is the destination which causes the most departure delay from Austin.
+
+```{r 1.1.3, echo=FALSE, warning=FALSE}
+ggplot(delay_summ, aes(x=reorder(Dest, dly.mean), y=dly.mean)) + 
+  geom_bar(stat='identity') + 
+  coord_flip() +
+  labs(title = 'Average Departure Delay per Destination', x = "Airport", y = "Minutes") +
+  scale_size_area()+
+  theme(plot.title = element_text(hjust = 0.5))
+```
+
+### What time of day does flight delay mostly occur?
+Next, we arranged our departure delay data by scheduled departure time. Our analysis shows that departure delays are most likely to happen between 0 to 1 o'clock at midnight. We don't know the exact reason for this, but bad sight due to darkness can be one of various reasons which cause departure delays.
+
+```{r 1.1.4, echo=FALSE}
+# plot the summ for all the airline companies 
+abia_CRSsumm_D_total <- abia_conf %>%
+  group_by(CRSTWindow_D,category) %>%
+  summarise(DepDelay_mean = mean(DepDelay))
+
+abia_CRSsumm_A_total <- abia_conf %>%
+  group_by(CRSTWindow_A,category) %>%
+  summarise(ArrDelay_mean = mean(ArrDelay))
+
+ggplot(data = subset(abia_CRSsumm_D_total,(abia_CRSsumm_D_total$category == "Departure")))+
+  geom_bar(aes(x = CRSTWindow_D, y = DepDelay_mean),stat='identity',position='dodge')+
+  labs(title = "Scheduled Time vs Average Departure Delay", x = "Scheduled Time", y = "Departure Delay")+
+  theme_bw()+
+  theme(plot.title = element_text(hjust = 0.5), panel.grid.major = element_blank())
+```
+
+Now, we arranged our arrival delay data by scheduled arrival time. Our analysis shows that arrival delays are most likely to happen between 22 to 23 o'clock at night. Again, we can guess that bad sight due to darkness can be one of various reasons.
+```{r 1.1.5, echo=FALSE}
+ggplot(data = subset(abia_CRSsumm_A_total,(abia_CRSsumm_A_total$category == "Arrival")))+
+  geom_bar(aes(x = CRSTWindow_A, y = ArrDelay_mean),stat='identity',position='dodge')+
+  labs(title = "Scheduled Time vs Average Arrival Delay", x = "Scheduled Time", y = "Arrival Delay")+
+  theme_bw()+
+  theme(plot.title = element_text(hjust = 0.5))
+```
+
+### Which month of year does flight delay mostly to occur?
+This time, we'll extend our view from day to year to find out the month which flight delay mostly occurs. In case of departure delays from Austin, December is the worst month if someone wants to avoid any delays. If you depart from Austin in December, you'll expect more than 15 minutes of delay on average.
+
+```{r 1.1.6, echo=FALSE}
+# plot the summ for all the airline companies 
+abia_summ_Month <- abia_conf %>%
+  group_by(Month,category) %>%
+  summarise(DepDelay_mean = mean(DepDelay),ArrDelay_mean = mean(ArrDelay))
+
+ggplot(data = subset(abia_summ_Month,(abia_summ_Month$category == "Departure")))+
+  geom_bar(aes(x = Month, y = DepDelay_mean),stat='identity',position='dodge')+
+  labs(title = "Month vs Average Departure Delay", x = "Month", y = "Departure Delay")+
+  theme_bw()+
+  scale_x_continuous(breaks = c(1,2,3,4,5,6,7,8,9,10,11,12),labels = c("1" = "Jan", "2" = "Feb", "3" = "Mar", "4" = "Apr", "5" = "May", "6" = "Jun", "7" = "Jul", "8" = "Aug", "9" = "Sep", "10" = "Oct", "11" = "Nov", "12" = "Dec"))+
+  theme(plot.title = element_text(hjust = 0.5))
+```
+
+December is the worst month again to avoid delays in case of arrival, too. It is likely to be caused by lots of flight demands at the end of year.
+
+```{r 1.1.7, echo=FALSE}
+ggplot(data = subset(abia_summ_Month,(abia_summ_Month$category == "Arrival")))+
+  geom_bar(aes(x = Month, y = ArrDelay_mean),stat='identity',position='dodge')+
+  labs(title = "Month vs Average Arrival Delay", x = "Month", y = "Arrival Delay")+
+  scale_x_continuous(breaks = c(1,2,3,4,5,6,7,8,9,10,11,12),labels = c("1" = "Jan", "2" = "Feb", "3" = "Mar", "4" = "Apr", "5" = "May", "6" = "Jun", "7" = "Jul", "8" = "Aug", "9" = "Sep", "10" = "Oct", "11" = "Nov", "12" = "Dec"))+
+  theme_bw()+
+  theme(plot.title = element_text(hjust = 0.5))
+```
+
+### Which airline company shows the longest delay time?
+
+Now, we'll see which airline company shows the longest delay time. In case of departure delays, ExpressJet airlines(EV) shows the worst performance among all the airlines. The boxplot below shows that EV has the largest median and variance. And the barplot also shows that average departure delay time is the longest in EV.
+
+```{r 1.1.8, echo=FALSE}
+bwplot(DepDelay~UniqueCarrier, data=abia_conf, ylim=c(-20,60), xlab="Airlines", ylab="Departure delays(min)", main="Departure delays by Airlines")
+AvgDepDelay_Unique=abia_conf%>% group_by(UniqueCarrier) %>% summarize(AvgDepDelay= mean(DepDelay) )
+
+mean.abia_conf<-as.data.frame(tapply(abia_conf$DepDelay, abia_conf$UniqueCarrier, mean))
+mean.abia_conf$UniqueCarrier<-rownames(mean.abia_conf)
+names(mean.abia_conf)<-c("DepDelay","UniqueCarrier")
+ggplot(mean.abia_conf, aes(reorder(UniqueCarrier, -DepDelay, sum), DepDelay))+geom_bar(stat="identity")+labs(title = "Average departure delay by Airlines", x = "Airlines", y = "Average departure delay(min)")
+```
+
+In case of arrival delays, the box plot apparently gives us information that PSA airline(OH) seems to have the highest median and also unstable delay range by large variance. The barplot below confirms this idea by showing the largest average arrival delay time for OH.
+
+```{r 1.1.9, echo=FALSE}
+bwplot(ArrDelay~UniqueCarrier, data=abia_conf, ylim=c(-60,70), xlab="Airlines", ylab="Arrival delays(min)", main="Arrival delays by Airlines")
+AvgDepDelay_Unique=abia_conf%>% group_by(UniqueCarrier) %>% summarize(AvgArrDelay= mean(ArrDelay) )
+
+mean.abia_conf<-as.data.frame(tapply(abia_conf$ArrDelay, abia_conf$UniqueCarrier, mean))
+mean.abia_conf$UniqueCarrier<-rownames(mean.abia_conf)
+names(mean.abia_conf)<-c("ArrDelay","UniqueCarrier")
+ggplot(mean.abia_conf, aes(reorder(UniqueCarrier, -ArrDelay, sum), ArrDelay))+geom_bar(stat="identity")+labs(title = "Average arrival delay by Airlines", x = "Airlines", y = "Average arrival delay(min)")
+
+```
+
+(text)
+
+```{r 1.1.10, echo=FALSE}
+# delay_summ$dly.mean[is.nan(delay_summ$dly.mean)]<-0.01
+# delay_summ = subset(delay_summ,(delay_summ$dly.mean >= 1))
+# delay_summ = arrange(delay_summ, dly.mean)
+
+
+ggplot() +
+  theme(plot.title = element_text(hjust = 0.5), panel.grid.major = element_blank(),  panel.grid.minor = element_blank())+
+  geom_polygon(data = us_states,  aes(long, lat, group = group), fill = "grey", col = "black") +
+  geom_curve(data=delay_summ, aes(x = AUSLong, y = AUSLat, xend = longitude_deg, yend = latitude_deg, colour = dly.mean), size = 1, curvature = 0.1) + 
+  geom_point(data=delay_summ, aes(x=longitude_deg, y=latitude_deg),color="red",size=1) +
+  scale_colour_gradient2(low="blue", high="red")+
+  labs(title = 'Average Departure Delay per Destination', x = "", y = "")+
+  theme(plot.title = element_text(hjust = 0.5))+
+  scale_x_discrete()+
+  scale_y_discrete()
+```
+
+(text)
+
+```{r 1.1.11, echo=FALSE}
+summary(delay_summ$dly.mean)
+delay_quant = subset(delay_summ,delay_summ$dly.mean >= 30.2)
+ggplot() +
+  theme(plot.title = element_text(hjust = 0.5), panel.grid.major = element_blank(),  panel.grid.minor = element_blank())+
+  geom_polygon(data = us_states,  aes(long, lat, group = group), fill = "grey", col = "black") +
+  geom_curve(data=delay_quant, aes(x = AUSLong, y = AUSLat, xend = longitude_deg, yend = latitude_deg, colour = dly.mean), size = 1, curvature = 0.1) + 
+  geom_point(data=delay_quant, aes(x=longitude_deg, y=latitude_deg),color="red",size=1) +
+  scale_colour_gradient2(low="blue", high="red")+
+  labs(title = 'Average Departure Delay per Destination - 3rd Quantile', x = "", y = "")+
+  theme(plot.title = element_text(hjust = 0.5))+
+  scale_x_discrete()+
+  scale_y_discrete()
+#  transition_states(dly.mean, transition_length = 0, state_length = 1)
 ```
 
 

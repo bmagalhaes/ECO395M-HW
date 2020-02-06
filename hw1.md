@@ -1,21 +1,87 @@
-By Bernardo Magalhaes, Adhish Luitel, Ji Heon Shim
+By Bernardo Magalhaes, Adhish Luitel, Ji Heon Shim \# Exercise 1
+
+Exercise 1.1
+------------
 
 In this question, we have all the data of flight information that arrive
 at or depart from Austin-Berstrom airport.
 
+### Which airline company has the highest cancellation rate?
+
+First, we’ll have a close look on cancellation rates by airline
+companies. Our data shows that American Eagle airline(MQ) has the
+highest cancellation rate among all the airlines flying through Austin.
+
+![](hw1_files/figure-markdown_github/1.1.2-1.png)
+
 ### Which destination is likely to cause the longest departure delay?
 
-First, we examined all the aircrafts departing from Austin, and arranged
+Next, we examined all the aircrafts departing from Austin, and arranged
 departure delays by their destinations. Our analysis shows that
 DTW(Detroit) is the destination which causes the most departure delay
 from Austin.
 
-    ## Warning: Column `Dest`/`iata_code` joining factors with different levels,
-    ## coercing to character vector
+![](hw1_files/figure-markdown_github/1.1.3-1.png)
 
-    ## Warning: Removed 1 rows containing missing values (position_stack).
+### What time of day does flight delay mostly occur?
 
-![](hw1_files/figure-markdown_github/1.1.2-1.png)
+Next, we arranged our departure delay data by scheduled departure time.
+Our analysis shows that departure delays are most likely to happen
+between 0 to 1 o’clock at midnight. We don’t know the exact reason for
+this, but bad sight due to darkness can be one of various reasons which
+cause departure delays.
+
+![](hw1_files/figure-markdown_github/1.1.4-1.png)
+
+Now, we arranged our arrival delay data by scheduled arrival time. Our
+analysis shows that arrival delays are most likely to happen between 22
+to 23 o’clock at night. Again, we can guess that bad sight due to
+darkness can be one of various reasons.
+![](hw1_files/figure-markdown_github/1.1.5-1.png)
+
+### Which month of year does flight delay mostly to occur?
+
+This time, we’ll extend our view from day to year to find out the month
+which flight delay mostly occurs. In case of departure delays from
+Austin, December is the worst month if someone wants to avoid any
+delays. If you depart from Austin in December, you’ll expect more than
+15 minutes of delay on average.
+
+![](hw1_files/figure-markdown_github/1.1.6-1.png)
+
+December is the worst month again to avoid delays in case of arrival,
+too. It is likely to be caused by lots of flight demands at the end of
+year.
+
+![](hw1_files/figure-markdown_github/1.1.7-1.png)
+
+### Which airline company shows the longest delay time?
+
+Now, we’ll see which airline company shows the longest delay time. In
+case of departure delays, ExpressJet airlines(EV) shows the worst
+performance among all the airlines. The boxplot below shows that EV has
+the largest median and variance. And the barplot also shows that average
+departure delay time is the longest in EV.
+
+![](hw1_files/figure-markdown_github/1.1.8-1.png)![](hw1_files/figure-markdown_github/1.1.8-2.png)
+
+In case of arrival delays, the box plot apparently gives us information
+that PSA airline(OH) seems to have the highest median and also unstable
+delay range by large variance. The barplot below confirms this idea by
+showing the largest average arrival delay time for OH.
+
+![](hw1_files/figure-markdown_github/1.1.9-1.png)![](hw1_files/figure-markdown_github/1.1.9-2.png)
+
+(text)
+
+![](hw1_files/figure-markdown_github/1.1.10-1.png)
+
+(text)
+
+    ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
+    ##   11.35   17.00   21.77   26.07   30.29  129.00       1
+
+![](hw1_files/figure-markdown_github/1.1.11-1.png)
 
 Exercise 1.2
 ============
@@ -42,14 +108,14 @@ was 3. The fitted model for k=3 is as below, and RSME is 10880.2
 
 ![](hw1_files/figure-markdown_github/1.2.4-1.png)
 
-    ## [1] 11466.68
+    ## [1] 10091.98
 
 When k=20, The fitted model is as below. RSME is 9238.5, which is
 smaller than RSME when k=3.
 
 ![](hw1_files/figure-markdown_github/1.2.5-1.png)
 
-    ## [1] 10170.71
+    ## [1] 9212.024
 
 Now, the fitted model for k=100 below shows us the fact that the graph
 gets smoother as k goes bigger. But RSME when k=100 is 10483.9, which is
@@ -58,7 +124,7 @@ minimizes RSME will be somewhere between k=3 and k=100.
 
 ![](hw1_files/figure-markdown_github/1.2.6-1.png)
 
-    ## [1] 11403.42
+    ## [1] 11230.99
 
 In order to find the optimal k, we plotted k versus RSME for every k.
 The graph below shows that RSME is minimized to 9134.4 when k equals to
@@ -70,7 +136,7 @@ samples are randomly chosen.
 
     ## [1] 12
 
-    ## [1] 9976.861
+    ## [1] 8855.53
 
 The graph below shows the plot of the fitted value when k is the optimal
 value.
@@ -91,14 +157,14 @@ k=3 is as below, and RSME is 21822.8
 
 ![](hw1_files/figure-markdown_github/1.2.11-1.png)
 
-    ## [1] 24957.24
+    ## [1] 20123.76
 
 When k=20, The fitted model is as below. RSME is 22546.5, which is
 slightly bigger than RSME when k=3.
 
 ![](hw1_files/figure-markdown_github/1.2.12-1.png)
 
-    ## [1] 24200.68
+    ## [1] 15966.78
 
 Now, the fitted model for k=100 below shows us the fact that the graph
 gets smoother as k goes bigger. But RSME when k=100 is 40928.0, which is
@@ -107,7 +173,7 @@ must be much smaller than 100.
 
 ![](hw1_files/figure-markdown_github/1.2.13-1.png)
 
-    ## [1] 33110.56
+    ## [1] 29207.55
 
 In order to find the optimal k, we plotted k versus RSME for every k
 value. The graph below shows that RSME is minimized to 21037.7 when k
@@ -115,9 +181,9 @@ equals to 4.
 
 ![](hw1_files/figure-markdown_github/1.2.14-1.png)
 
-    ## [1] 5
+    ## [1] 19
 
-    ## [1] 23219.28
+    ## [1] 15883.46
 
 The graph below shows the plot of fitted model when k is optimally
 chosen.
