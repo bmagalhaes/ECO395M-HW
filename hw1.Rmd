@@ -29,17 +29,287 @@ rmse = function(y, ypred) {
 ```
 
 ### Sclass 350
-First, we'll look on the Sclass 350 data. We can see there's a negative relationship between mileage and price plotted as below
+First, we'll look on the Sclass 350 data. We can see there's a negative relationship between mileage and price plotted as below  
 
 
 ```{r 1.2.2, echo=FALSE}
 # plot the data
 p_350 = ggplot(data = sclass_350) + 
-  geom_point(mapping = aes(x = mileage, y = price), color='darkgrey')+
+  geom_point(mapping = aes(x = mileage, y = price), color='medium purple')+
   theme_bw()+
-  labs(title = "Mileage vs Price (Trim Level: 350)")+
+  labs(title = "Mileage vs Price (Sclass 350)")+
   theme(plot.title = element_text(hjust = 0.5))
 p_350
 ```
 
+And we splitted Sclass 350 data into two groups. One is "training set", and the other is "test set". The training set accounts for 80% of whole data. 
 
+```{r 1.2.3, echo=FALSE}
+# Make a train-test split
+N = nrow(sclass_350)
+N_train = floor(0.8*N)
+N_test = N - N_train
+
+# randomly sample a set of data points to include in the training set
+train_ind = sample.int(N, N_train, replace=FALSE)
+
+# Define the training and testing set
+D_train = sclass_350[train_ind,]
+D_test = sclass_350[-train_ind,]
+
+# optional book-keeping step:
+D_test = arrange(D_test, mileage)
+
+# Now separate the training and testing sets into features (X) and outcome (y)
+X_train = select(D_train, mileage)
+y_train = select(D_train, price)
+X_test = select(D_test, mileage)
+y_test = select(D_test, price)
+
+```
+
+Then we ran K-nearest-neighbors for k, starting from k=3 to higher value. We faced an error when k=2, so the possible minimum value of k was 3. The fitted model for k=3 is as below, and RSME is 10880.2
+  
+```{r 1.2.4, echo=FALSE}
+# k=3
+knn3 = knn.reg(train = X_train, test = X_test, y = y_train, k=3)
+ypred_knn3 = knn3$pred
+D_test$ypred_knn3 = ypred_knn3
+
+p_test_knn3 = ggplot(data = D_test) + 
+  geom_point(mapping = aes(x = mileage, y = price), color='lightgrey') + 
+  geom_path(mapping = aes(x = mileage, y = ypred_knn3), color='red') +
+  theme_bw()+
+  labs(title = "Fitted Model for k=3 (Sclass 350)")+
+  theme(plot.title = element_text(hjust = 0.5))
+p_test_knn3
+rmse(y_test, ypred_knn3)
+```
+
+When k=20, The fitted model is as below. RSME is 9238.5, which is smaller than RSME when k=3. 
+
+
+```{r 1.2.5, echo=FALSE}
+# k=20
+knn20 = knn.reg(train = X_train, test = X_test, y = y_train, k=20)
+ypred_knn20 = knn20$pred
+
+D_test$ypred_knn20 = ypred_knn20
+
+p_test_knn20 = ggplot(data = D_test) + 
+  geom_point(mapping = aes(x = mileage, y = price), color='lightgrey') + 
+  geom_path(mapping = aes(x = mileage, y = ypred_knn20), color='red') +
+  theme_bw()+
+  labs(title = "Fitted Model for k=20 (Sclass 350)")+
+  theme(plot.title = element_text(hjust = 0.5))
+p_test_knn20
+rmse(y_test, ypred_knn20)
+```
+
+Now, the fitted model for k=100 below shows us the fact that the graph gets smoother as k goes bigger. But RSME when k=100 is 10483.9, which is bigger than that of when k=20. So it is probable that the optimal k that minimizes RSME will be somewhere between k=3 and k=100.
+
+
+```{r 1.2.6, echo=FALSE}
+# k=100
+knn100 = knn.reg(train = X_train, test = X_test, y = y_train, k=100)
+ypred_knn100 = knn100$pred
+
+D_test$ypred_knn100 = ypred_knn100
+
+p_test_knn100 = ggplot(data = D_test) + 
+  geom_point(mapping = aes(x = mileage, y = price), color='lightgrey') + 
+  geom_path(mapping = aes(x = mileage, y = ypred_knn100), color='red') +
+  theme_bw()+
+  labs(title = "Fitted Model for k=100 (Sclass 350)")+
+  theme(plot.title = element_text(hjust = 0.5))
+p_test_knn100
+rmse(y_test, ypred_knn100)
+```
+
+In order to find the optimal k, we plotted k versus RSME for every k. The graph below shows that RSME is minimized to 9134.4 when k equals to 18.   
+The optimal value of k can vary whenever we run the regression because samples are randomly chosen.
+
+
+```{r 1.2.7, echo=FALSE}
+KNN_result <- data.frame(K=c(), rsme=c())
+# KNN
+for(v in c(3:nrow(X_train))){
+  knn_K = knn.reg(train = X_train, test = X_test, y = y_train, k=v)
+  ypred_knn = knn_K$pred
+  KNN_rsme = rmse(y_test, ypred_knn)
+  KNN_result <- rbind(KNN_result,c(v,KNN_rsme))
+}
+
+colnames(KNN_result) = c("K","RSME")
+Kmin = KNN_result$K[which.min(KNN_result$RSME)]
+
+P_KNNresult_350 = ggplot(data = KNN_result)+
+  geom_line(aes(x = K, y = RSME))+
+  geom_line(aes(x = Kmin, y = RSME), col = "red")+
+  theme_bw()+
+  labs(title = "K vs RSME(Sclass 350)")+
+  theme(plot.title = element_text(hjust = 0.5))
+P_KNNresult_350
+Kmin
+knn_kmin = knn.reg(train = X_train, test = X_test, y = y_train, k=Kmin)
+ypred_knn_kmin = knn_kmin$pred
+D_test$ypred_knn_kmin = ypred_knn_kmin
+rmse(y_test, ypred_knn_kmin)
+```
+
+The graph below shows the plot of the fitted value when k is the optimal value.
+
+```{r 1.2.8, echo=FALSE}
+p_test_knn_kmin = ggplot(data = D_test) + 
+  geom_point(mapping = aes(x = mileage, y = price), color='lightgrey') + 
+  geom_path(mapping = aes(x = mileage, y = ypred_knn_kmin), color='red') +
+  theme_bw()+
+  labs(title = "Fitted Model for k=18 (Optimal, Sclass 350)")+
+  theme(plot.title = element_text(hjust = 0.5))
+p_test_knn_kmin
+```
+### Sclass 65 AMG
+Now, we'll take the same step to find out the optimal k for subgroup sclass 65 AMG. The plot below also shows us a negative relation between price and mileage.
+
+```{r 1.2.9, echo=FALSE}
+# plot the data
+p_65 = ggplot(data = sclass_65AMG) + 
+  geom_point(mapping = aes(x = mileage, y = price), color='salmon 3')+
+  theme_bw()+
+  labs(title = "Mileage vs Price (Sclass 65 AMG)")+
+  theme(plot.title = element_text(hjust = 0.5))
+p_65
+```
+
+As we did on the Sclass 350 case, the Sclass 65 AMG data is also splitted into two groups- a training set and a test set. The training set accounts for 80% of whole data. 
+
+```{r 1.2.10, echo=FALSE}
+# Make a train-test split
+N = nrow(sclass_65AMG)
+N_train = floor(0.8*N)
+N_test = N - N_train
+
+# randomly sample a set of data points to include in the training set
+train_ind = sample.int(N, N_train, replace=FALSE)
+
+# Define the training and testing set
+D_train = sclass_65AMG[train_ind,]
+D_test = sclass_65AMG[-train_ind,]
+
+# optional book-keeping step:
+D_test = arrange(D_test, mileage)
+
+# Now separate the training and testing sets into features (X) and outcome (y)
+X_train = select(D_train, mileage)
+y_train = select(D_train, price)
+X_test = select(D_test, mileage)
+y_test = select(D_test, price)
+```
+
+We'll start with k=3, and run K-nearest-neighbors. The fitted model for k=3 is as below, and RSME is 21822.8
+
+```{r 1.2.11, echo=FALSE}
+# k=3
+knn3 = knn.reg(train = X_train, test = X_test, y = y_train, k=3)
+ypred_knn3 = knn3$pred
+D_test$ypred_knn3 = ypred_knn3
+
+p_test_knn3 = ggplot(data = D_test) + 
+  geom_point(mapping = aes(x = mileage, y = price), color='lightgrey') + 
+  geom_path(mapping = aes(x = mileage, y = ypred_knn3), color='red') +
+  theme_bw()+
+  labs(title = "Fitted Model for k=3 (Sclass 65 AMG)")+
+  theme(plot.title = element_text(hjust = 0.5))
+p_test_knn3
+rmse(y_test, ypred_knn3)
+```
+
+When k=20, The fitted model is as below. RSME is 22546.5, which is slightly bigger than RSME when k=3. 
+
+
+```{r 1.2.12, echo=FALSE}
+# k=20
+knn20 = knn.reg(train = X_train, test = X_test, y = y_train, k=20)
+ypred_knn20 = knn20$pred
+
+D_test$ypred_knn20 = ypred_knn20
+
+p_test_knn20 = ggplot(data = D_test) + 
+  geom_point(mapping = aes(x = mileage, y = price), color='lightgrey') + 
+  geom_path(mapping = aes(x = mileage, y = ypred_knn20), color='red') +
+  theme_bw()+
+  labs(title = "Fitted Model for k=20 (Sclass 65 AMG)")+
+  theme(plot.title = element_text(hjust = 0.5))
+p_test_knn20
+rmse(y_test, ypred_knn20)
+```
+Now, the fitted model for k=100 below shows us the fact that the graph gets smoother as k goes bigger. But RSME when k=100 is 40928.0, which is much bigger than that of when k=20. So the optimal k that minimizes RSME must be much smaller than 100.
+
+```{r 1.2.13, echo=FALSE}
+# k=100
+knn100 = knn.reg(train = X_train, test = X_test, y = y_train, k=100)
+ypred_knn100 = knn100$pred
+
+D_test$ypred_knn100 = ypred_knn100
+
+p_test_knn100 = ggplot(data = D_test) + 
+  geom_point(mapping = aes(x = mileage, y = price), color='lightgrey') + 
+  geom_path(mapping = aes(x = mileage, y = ypred_knn100), color='red') +
+  theme_bw()+
+  labs(title = "Fitted Model for k=100 (Sclass 65 AMG)")+
+  theme(plot.title = element_text(hjust = 0.5))
+p_test_knn100
+rmse(y_test, ypred_knn100)
+```
+
+In order to find the optimal k, we plotted k versus RSME for every k value. The graph below shows that RSME is minimized to 21037.7 when k equals to 4.
+
+```{r 1.2.14, echo=FALSE}
+KNN_result <- data.frame(K=c(), rsme=c())
+# KNN
+for(v in c(3:nrow(X_train))){
+  knn_K = knn.reg(train = X_train, test = X_test, y = y_train, k=v)
+  ypred_knn = knn_K$pred
+  KNN_rsme = rmse(y_test, ypred_knn)
+  KNN_result <- rbind(KNN_result,c(v,KNN_rsme))
+}
+
+colnames(KNN_result) = c("K","RSME")
+Kmin = KNN_result$K[which.min(KNN_result$RSME)]
+
+P_KNNresult_65AMG = ggplot(data = KNN_result)+
+  geom_line(aes(x = K, y = RSME))+
+  geom_line(aes(x = Kmin, y = RSME), col = "red")+
+  theme_bw()+
+  labs(title = "K vs RSME(Sclass 65 AMG)")+
+  theme(plot.title = element_text(hjust = 0.5))
+P_KNNresult_65AMG
+Kmin
+knn_kmin = knn.reg(train = X_train, test = X_test, y = y_train, k=Kmin)
+ypred_knn_kmin = knn_kmin$pred
+D_test$ypred_knn_kmin = ypred_knn_kmin
+rmse(y_test, ypred_knn_kmin)
+
+```
+
+The graph below shows the plot of fitted model when k is optimally chosen. 
+
+```{r 1.2.15, echo=FALSE}
+p_test_knn_kmin = ggplot(data = D_test) + 
+  geom_point(mapping = aes(x = mileage, y = price), color='lightgrey') + 
+  geom_path(mapping = aes(x = mileage, y = ypred_knn_kmin), color='red') +
+  theme_bw()+
+  labs(title = "Fitted Model for k=4 (Optimal, Sclass 65 AMG)")+
+  theme(plot.title = element_text(hjust = 0.5))
+p_test_knn_kmin
+```
+
+In conclusion, the optimal k value was larger in subgroup Sclass 350 than sclass 65 AMG.   
+There are more samples in 350 than in 65 AMG. So higher k can be required to get more precise prediction.
+Besides, samples in 350 are more dispersed than those in 65 AMG. The large variance of sample can be one factor which requires high value of k.
+
+
+```{r 1.2.16, echo=TRUE}
+count(sclass_350)
+count(sclass_65AMG)
+```
