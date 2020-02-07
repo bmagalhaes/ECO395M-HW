@@ -115,13 +115,23 @@ ggplot(mean.abia_conf, aes(reorder(UniqueCarrier, -ArrDelay, sum), ArrDelay))+ge
   theme(plot.title = element_text(hjust = 0.5))
 
 #####################
+
+dest_traf = departures_fly %>%
+  group_by(Dest)  %>% 
+  summarize(number = n())
+dest_traf = left_join(dest_traf, airports, by = c("Dest" = "iata_code"))
+dest_traf = mutate(dest_traf,AUSLat = 30.194500)
+dest_traf = mutate(dest_traf,AUSLong = -97.66990)
+summary(dest_traf$number)
+number_quant = subset(dest_traf,dest_traf$number >= 939)
+
 ggplot() +
 theme(plot.title = element_text(hjust = 0.5), panel.grid.major = element_blank(),  panel.grid.minor = element_blank())+
 geom_polygon(data = us_states,  aes(long, lat, group = group), fill = "grey", col = "black") +
-geom_curve(data=delay_summ, aes(x = AUSLong, y = AUSLat, xend = longitude_deg, yend = latitude_deg, colour = dly.mean), size = 1, curvature = 0.1) + 
-geom_point(data=delay_summ, aes(x=longitude_deg, y=latitude_deg),color="red",size=1) +
+geom_curve(data=number_quant, aes(x = AUSLong, y = AUSLat, xend = longitude_deg, yend = latitude_deg, colour = number), size = 1, curvature = 0.1) + 
+geom_point(data=number_quant, aes(x=longitude_deg, y=latitude_deg),color="red",size=1) +
 scale_colour_gradient2(low="blue", high="red")+
-labs(title = 'Average Departure Delay per Destination', x = "", y = "")+
+labs(title = 'Number of Flights per Destination 3rd Quantile', x = "", y = "")+
 theme(plot.title = element_text(hjust = 0.5))+
 scale_x_discrete()+
 scale_y_discrete()

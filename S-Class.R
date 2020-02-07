@@ -10,7 +10,6 @@ sclass65AMG = subset(sclass, trim == '65 AMG')
 summary(sclass65AMG)
 
 plot(price ~ mileage, data = sclass550, main = "Price vs Mileage for SClass350")
-plot(price ~ mileage, data = sclass65AMG, main = "Price vs Mileage for SClass65AMG")
 
 # Make a train test split
 N = nrow(sclass550)
@@ -24,7 +23,7 @@ train_ind = sample.int(N, N_train, replace=FALSE)
 D_train = sclass550[train_ind,]
 D_test = sclass550[-train_ind,]
 
-#housekeeping, just arrange as per mileage
+#Arrange as per mileage
 D_test = arrange(D_test, mileage)
 head(D_test)
 
@@ -72,6 +71,7 @@ for(i in 3:nrow(X_train)) {
 
 names(knn_resultrsme) = c("K", "rsme")
 k_min = with(knn_resultrsme, K[rsme == min(rsme)])
+rsme_min = with(knn_resultrsme, rsme[rsme == min(rsme)])
 
 ggplot(data = knn_resultrsme) + 
   geom_point(mapping = aes(x = K, y = rsme), color='lightgrey') + 
@@ -81,6 +81,7 @@ ggplot(data = knn_resultrsme) +
   theme(plot.title = element_text(hjust = 0.5))
 
 knn_min = knn.reg(train = X_train, test = X_test, y = y_train, k=k_min)
+
 ypred_knn = as.data.frame(knn_min$pred)
 names(ypred_knn) = c("ypred_knn")
 
@@ -104,6 +105,8 @@ ggplot(data = ypred_knn) +
 
 ##### NOW FOR THE OTHER CAR MODEL (65AMG) ####
 
+plot(price ~ mileage, data = sclass65AMG, main = "Price vs Mileage for SClass65AMG")
+
 M = nrow(sclass65AMG)
 M_train = floor(0.8*M)
 M_test = M - M_train
@@ -114,6 +117,7 @@ train_ind2 = sample.int(M, M_train, replace=FALSE)
 # Formalise training and testing sets
 E_train = sclass65AMG[train_ind2,]
 E_test = sclass65AMG[-train_ind2,]
+
 
 #housekeeping, just arrange as per mileage
 E_test = arrange(E_test, mileage)
@@ -159,6 +163,7 @@ for(i in 3:nrow(X2_train)) {
 
 names(knn_resultrsme2) = c("K", "rsme")
 k_min2 = with(knn_resultrsme2, K[rsme == min(rsme)])
+rsme_min2 = with(knn_resultrsme2, rsme[rsme == min(rsme)])
 
 ggplot(data = knn_resultrsme2) + 
   geom_point(mapping = aes(x = K, y = rsme), color='lightgrey') + 
@@ -168,6 +173,7 @@ ggplot(data = knn_resultrsme2) +
   theme(plot.title = element_text(hjust = 0.5))
 
 knn_min2 = knn.reg(train = X2_train, test = X2_test, y = y2_train, k=k_min2)
+
 ypred_knn2 = as.data.frame(knn_min2$pred)
 names(ypred_knn2) = c("ypred_knn2")
 
