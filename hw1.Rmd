@@ -358,13 +358,13 @@ ggplot(data = ypred_knn) +
 
 We need to realise that since we are taking randomized samples, the optimal K changes and so would RSME. So our K and RSME would change everytime we take a random sample and run a KNN regression. We found that the optimal K was the following.
 
-```{r showK2, echo=FALSE}
+```{r 1.2.7, echo=FALSE}
 print(k_min)
 ```
 
 The RSME associated with that K is the following.
 
-```{r showK2, echo=FALSE}
+```{r 1.2.8, echo=FALSE}
 print(rsme_min)
 ```
 
@@ -484,13 +484,13 @@ Like mentioned before, note that as we are taking random samples, the optimal K 
 
 We found that the optimal K was the following.
 
-```{r showK2, echo=FALSE}
+```{r 1.2.14, echo=FALSE}
 print(k_min2)
 ```
 
 The RSME associated with that K is the following.
 
-```{r showK2, echo=FALSE}
+```{r 1.2.15, echo=FALSE}
 print(rsme_min2)
 ```
 
