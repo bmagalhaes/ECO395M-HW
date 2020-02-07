@@ -6,9 +6,9 @@ output:
   md_document:
     variant: markdown_github
 ---
-# Bernardo Arreal Magalhaes - UTEID ba25727
-# Adhish Luitel - UTEID al49674
-# Ji Heon Shim - UTEID js93996
+### Bernardo Arreal Magalhaes - UTEID ba25727
+### Adhish Luitel - UTEID al49674
+### Ji Heon Shim - UTEID js93996
 
 # Exercise 1
 
@@ -25,7 +25,7 @@ abia<-read.csv(url(urlfile))
 ```
 
 ## Exercise 1.1
-In this question, we have all the data of flight information that arrive at or depart from Austin-Berstrom International Airport.  
+In this question, we have all the data of flight information that arrive at or depart from Austin-Bergstrom International Airport.  
 
 ```{r 1.1.1, echo=FALSE}
 abia = mutate(abia, category = ifelse(Origin == "AUS", "Departure", "Arrival"))
@@ -43,8 +43,8 @@ abia_cancel <- subset(abia,(abia$Cancelled == "1"))
 
 ```
 
-### Which airline company has the highest cancellation rate?
-First, we'll have a close look on cancellation rates by airline companies. Our data shows that American Eagle Airline (MQ), the regional brand of American Airlines, has the highest cancellation rate among all the airlines flying from Austin.
+### Which airline has the highest cancellation rate?
+First, we'll have a close look on cancellation rates by airlines. Our data shows that Envoy Air(formerly American Eagle Airlines, MQ), the regional brand of American Airlines, has the highest cancellation rate among all the airlines flying from Austin.
 
 ```{r 1.1.2, echo=FALSE, warning=FALSE}
 departures_fly <- subset(abia_conf, abia_conf$category == "Departure")
@@ -71,8 +71,9 @@ ggplot(cancel_rate, aes(x=reorder(UniqueCarrier, cancelrate), y=cancelrate)) +
   theme(plot.title = element_text(hjust = 0.5))
 ```
 
-### Which destination is likely to cause the longest departure delay?
-Next, we examined all the flights departing from Austin, and arranged departure delays by their destinations. Our analysis shows that DSM (Des Moines International Airport - Iowa) is the destination which causes the most departure delay from Austin. It is important to notice that there was only one flight to this destination during the entire year of 2018, what explain such a discrepancy from the other destinations.
+### Which destination is related to the longest departure delay?
+Next, we examined all the flights departing from Austin, and arranged departure delays by their destinations. Our analysis shows that DSM (Des Moines International Airport - Iowa) is the destination which has the longest average departure delay time from Austin. It is important to notice that there was only one flight to this destination during the entire year of 2008, what explains such a discrepancy from the other destinations.  
+The second one is EWR(Newark Liberty International Airport - NJ). There were 941 flights flew from Austin to EWR in 2008, and the average departure delay time was 20 minutes.
 
 ```{r 1.1.3, echo=FALSE, warning=FALSE}
 ggplot(delay_summ, aes(x=reorder(Dest, dly.mean), y=dly.mean)) + 
@@ -84,7 +85,7 @@ ggplot(delay_summ, aes(x=reorder(Dest, dly.mean), y=dly.mean)) +
 ```
 
 ### What time of day does flight delay mostly occur?
-Next, we arranged our departure delay data by scheduled departure time. Our analysis shows that departure delays are most likely to happen between 0 to 1 o'clock at night. We don't know the exact explanation for this, but among possible conjectures we think it might be due to the fact that late night flights "carry-on" the delays acumulated during the day since it operates with the aircrafts that are arriving from other destinations. It might be the reason why late-night flights are sold by lowest fares.
+Next, we arranged our departure delay data by scheduled departure time. Our analysis shows that departure delays are most likely to happen between 0 to 1 o'clock at night. We don't know the exact explanation for this, but among possible conjectures we think it might be due to the fact that late night flights "carry-over" the delays accumulated during the day since it operates with the aircrafts that are arriving from other destinations. It might be the reason why late-night flights are sold by lowest fares.
 
 ```{r 1.1.4, echo=FALSE}
 # plot the summ for all the airline companies 
@@ -105,7 +106,8 @@ theme_bw()+
 theme(plot.title = element_text(hjust = 0.5), panel.grid.major = element_blank())
 ```
 
-Now, we arranged our arrival delay data by scheduled arrival time. Our analysis shows that arrival delays are most likely to happen between 22 to 23 o'clock at night. Again, we can reasonably argue that it might be due to the "carry-on" effect of the delays acumulated during the day.
+Now, we arranged our arrival delay data by scheduled arrival time. Our analysis shows that arrival delays are most likely to happen between 22 to 23 o'clock at night. Again, we can reasonably argue that it might be due to the "carry-over" effect of the delays accumulated during the day.
+
 ```{r 1.1.5, echo=FALSE}
 ggplot(data = abia_CRSsumm_A_total)+
 geom_bar(aes(x = CRSTWindow_A, y = ArrDelay_mean),stat='identity',position='dodge')+
@@ -115,7 +117,7 @@ theme(plot.title = element_text(hjust = 0.5), panel.grid.major = element_blank()
 ```
 
 ### Which month of year does flight delay mostly occur?
-This time, we'll extend our view from day to year to find out the month which flight delay mostly occurs. In case of departure delays from Austin, December is the worst month if someone wants to avoid any delays. If you depart from Austin in December, you'll expect more than 15 minutes of delay on average - what matches with common sense that the worst time of the year to fly is during holidays season.
+This time, we'll extend our view from day to year to find out the month in which flight delay mostly occurs. In case of departure delays from Austin, December is the worst month if someone wants to avoid any delays. If you depart from Austin in December, you'll expect more than 15 minutes of delay on average - what matches with common sense that the worst time of the year to fly is during holidays season.
 
 ```{r 1.1.6, echo=FALSE}
 # plot the summ for all the airline companies 
@@ -142,7 +144,7 @@ theme_bw()+
 theme(plot.title = element_text(hjust = 0.5))
 ```
 
-### Which airline company shows the longest delay time?
+### Which airline shows the longest delay time?
 
 Now, we'll see which airline company shows the longest delay time. In case of departure delays, ExpressJet Airlines (EV) shows the worst performance among all the airlines. The boxplot below shows that EV has the largest median and variance. And the barplot also shows that average departure delay time is the longest in EV.
 
@@ -179,7 +181,7 @@ theme(plot.title = element_text(hjust = 0.5))
 
 When focusing on the most common destinations for flights departing from ABIA, we can see that Dallas, Houston, Phoenix and Denver concentrate approximately 40% of the flights leaving Austin.
 
-```{r 1.1.10, echo=FALSE}
+```{r 1.1.10, echo=FALSE, warning=FALSE}
 
 dest_traf = departures_fly %>%
   group_by(Dest)  %>% 
@@ -244,7 +246,7 @@ The graph indicates a negative relationship between mileage and price.
 plot(price ~ mileage, data = sclass550, main = "Price vs Mileage for SClass350")
 ```
 
-In supervised learning, we used a training dataset, containing 80% of the outcomes(datapoints) randomly assigned, to train the machine. We then use testing dataset that has the other 20% of the data to predict outcomes.Given the fact that the dataset was randomly splitted and that the sample size is limitted, it is important to note that one might come up with different results every time.
+In supervised learning, we used a training dataset, containing 80% of the outcomes(datapoints) randomly assigned, to train the machine. We then used testing dataset that had the other 20% of the data to predict outcomes. Given the fact that the dataset was randomly splitted and that the sample size is limitted, it is important to note that one might come up with different results every time.
 
 ```{r 1.2.3, echo=FALSE}
 # Make a train test split
@@ -275,7 +277,7 @@ ypred_lm2 = predict(lm, D_test)
 
 We added a linear model to our analysis as a comparison metric as to our hypothesis of how the prices should be falling as per the rise in mileage.
 
-```{r}
+```{r 1.2.3.1, echo=FALSE}
 ggplot(data = D_test) + 
 geom_point(mapping = aes(x = mileage, y = price), color='lightgrey') + 
 theme_bw(base_size=18) + geom_path(aes(x = mileage, y = ypred_lm2), color='red') +
@@ -496,4 +498,4 @@ print(rsme_min2)
 
 We can see that the optimal k value is larger in subgroup 65 AMG than sclass  Sclass 350. However, we can't assess whether it is due to a different pattern or a difference in the randomization process.
 
-In addition, samples in 350 are more dispersed than those in 65 AMG. The large variance of sample can be aruged as giving a better 'data quality' and this could be one factor which attributes to a different value of k for the 350 sub-class.
+In addition, samples in 350 are more dispersed than those in 65 AMG. The large variance of sample can be aruged as the factor which yields to a different value of k for the 350 sub-class.

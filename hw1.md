@@ -1,11 +1,8 @@
-Bernardo Arreal Magalhaes - UTEID ba25727
-=========================================
+### Bernardo Arreal Magalhaes - UTEID ba25727
 
-Adhish Luitel - UTEID al49674
-=============================
+### Adhish Luitel - UTEID al49674
 
-Ji Heon Shim - UTEID js93996
-============================
+### Ji Heon Shim - UTEID js93996
 
 Exercise 1
 ==========
@@ -14,25 +11,29 @@ Exercise 1.1
 ------------
 
 In this question, we have all the data of flight information that arrive
-at or depart from Austin-Berstrom International Airport.
+at or depart from Austin-Bergstrom International Airport.
 
-### Which airline company has the highest cancellation rate?
+### Which airline has the highest cancellation rate?
 
-First, we’ll have a close look on cancellation rates by airline
-companies. Our data shows that American Eagle Airline (MQ), the regional
-brand of American Airlines, has the highest cancellation rate among all
-the airlines flying from Austin.
+First, we’ll have a close look on cancellation rates by airlines. Our
+data shows that Envoy Air(formerly American Eagle Airlines, MQ), the
+regional brand of American Airlines, has the highest cancellation rate
+among all the airlines flying from Austin.
 
 ![](hw1_files/figure-markdown_github/1.1.2-1.png)
 
-### Which destination is likely to cause the longest departure delay?
+### Which destination is related to the longest departure delay?
 
 Next, we examined all the flights departing from Austin, and arranged
 departure delays by their destinations. Our analysis shows that DSM (Des
-Moines International Airport - Iowa) is the destination which causes the
-most departure delay from Austin. It is important to notice that there
-was only one flight to this destination during the entire year of 2018,
-what explain such a discrepancy from the other destinations.
+Moines International Airport - Iowa) is the destination which has the
+longest average departure delay time from Austin. It is important to
+notice that there was only one flight to this destination during the
+entire year of 2008, what explains such a discrepancy from the other
+destinations.  
+The second one is EWR(Newark Liberty International Airport - NJ). There
+were 941 flights flew from Austin to EWR in 2008, and the average
+departure delay time was 20 minutes.
 
 ![](hw1_files/figure-markdown_github/1.1.3-1.png)
 
@@ -42,23 +43,24 @@ Next, we arranged our departure delay data by scheduled departure time.
 Our analysis shows that departure delays are most likely to happen
 between 0 to 1 o’clock at night. We don’t know the exact explanation for
 this, but among possible conjectures we think it might be due to the
-fact that late night flights “carry-on” the delays acumulated during the
-day since it operates with the aircrafts that are arriving from other
-destinations. It might be the reason why late-night flights are sold by
-lowest fares.
+fact that late night flights “carry-over” the delays accumulated during
+the day since it operates with the aircrafts that are arriving from
+other destinations. It might be the reason why late-night flights are
+sold by lowest fares.
 
 ![](hw1_files/figure-markdown_github/1.1.4-1.png)
 
 Now, we arranged our arrival delay data by scheduled arrival time. Our
 analysis shows that arrival delays are most likely to happen between 22
 to 23 o’clock at night. Again, we can reasonably argue that it might be
-due to the “carry-on” effect of the delays acumulated during the day.
+due to the “carry-over” effect of the delays accumulated during the day.
+
 ![](hw1_files/figure-markdown_github/1.1.5-1.png)
 
 ### Which month of year does flight delay mostly occur?
 
 This time, we’ll extend our view from day to year to find out the month
-which flight delay mostly occurs. In case of departure delays from
+in which flight delay mostly occurs. In case of departure delays from
 Austin, December is the worst month if someone wants to avoid any
 delays. If you depart from Austin in December, you’ll expect more than
 15 minutes of delay on average - what matches with common sense that the
@@ -72,7 +74,7 @@ end of year.
 
 ![](hw1_files/figure-markdown_github/1.1.7-1.png)
 
-### Which airline company shows the longest delay time?
+### Which airline shows the longest delay time?
 
 Now, we’ll see which airline company shows the longest delay time. In
 case of departure delays, ExpressJet Airlines (EV) shows the worst
@@ -94,9 +96,6 @@ average arrival delay time for OH.
 When focusing on the most common destinations for flights departing from
 ABIA, we can see that Dallas, Houston, Phoenix and Denver concentrate
 approximately 40% of the flights leaving Austin.
-
-    ## Warning: Column `Dest`/`iata_code` joining factors with different levels,
-    ## coercing to character vector
 
 ![](hw1_files/figure-markdown_github/1.1.10-1.png)
 
@@ -128,8 +127,8 @@ indicates a negative relationship between mileage and price.
 
 In supervised learning, we used a training dataset, containing 80% of
 the outcomes(datapoints) randomly assigned, to train the machine. We
-then use testing dataset that has the other 20% of the data to predict
-outcomes.Given the fact that the dataset was randomly splitted and that
+then used testing dataset that had the other 20% of the data to predict
+outcomes. Given the fact that the dataset was randomly splitted and that
 the sample size is limitted, it is important to note that one might come
 up with different results every time.
 
@@ -137,15 +136,7 @@ We added a linear model to our analysis as a comparison metric as to our
 hypothesis of how the prices should be falling as per the rise in
 mileage.
 
-``` r
-ggplot(data = D_test) + 
-geom_point(mapping = aes(x = mileage, y = price), color='lightgrey') + 
-theme_bw(base_size=18) + geom_path(aes(x = mileage, y = ypred_lm2), color='red') +
-labs(title = "Linear Model's price prediction for SClass350")+
-theme(plot.title = element_text(hjust = 0.5))
-```
-
-![](hw1_files/figure-markdown_github/unnamed-chunk-1-1.png)
+![](hw1_files/figure-markdown_github/1.2.3.1-1.png)
 
 Now, we ran K-nearest-neighbors for k, starting from k=3 to the sample
 size. We faced an error when k=2 given the fact that the KNN function
@@ -173,11 +164,11 @@ optimal K changes and so would RSME. So our K and RSME would change
 everytime we take a random sample and run a KNN regression. We found
 that the optimal K was the following.
 
-    ## [1] 39
+    ## [1] 46
 
 The RSME associated with that K is the following.
 
-    ## [1] 8788.867
+    ## [1] 9883.814
 
 Now we can do the same with the 65AMG trim.
 
@@ -216,17 +207,16 @@ and run a KNN regression.
 
 We found that the optimal K was the following.
 
-    ## [1] 6
+    ## [1] 14
 
 The RSME associated with that K is the following.
 
-    ## [1] 21528.67
+    ## [1] 22044.06
 
 We can see that the optimal k value is larger in subgroup 65 AMG than
 sclass Sclass 350. However, we can’t assess whether it is due to a
 different pattern or a difference in the randomization process.
 
 In addition, samples in 350 are more dispersed than those in 65 AMG. The
-large variance of sample can be aruged as giving a better ‘data quality’
-and this could be one factor which attributes to a different value of k
-for the 350 sub-class.
+large variance of sample can be aruged as the factor which yields to a
+different value of k for the 350 sub-class.
